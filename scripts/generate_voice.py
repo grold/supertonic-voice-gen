@@ -28,25 +28,37 @@ def main():
 
     args = parser.parse_args()
     
-    tts = TTS(auto_download=True)
-    style = tts.get_voice_style(voice_name=args.voice)
-    
-    wav, duration = tts.synthesize(
-        text=args.text,
-        lang=args.lang,
-        voice_style=style,
-        total_steps=args.steps,
-        speed=args.speed
-    )
-    
-    tts.save_audio(wav, args.output)
-    # duration is a numpy array scalar, use item() to get python float
-    d_val = duration.item() if hasattr(duration, 'item') else float(duration)
-    print(f"Saved to {args.output} (Duration: {d_val:.2f}s)")
+    # Validation
+    if args.speed <= 0:
+        print("Error: Speed must be positive.")
+        sys.exit(1)
+    if args.steps < 1:
+        print("Error: Steps must be at least 1.")
+        sys.exit(1)
 
-    if not args.no_play:
-        if not play_audio(args.output, args.player):
-            print("Warning: No audio player found.")
+    try:
+        tts = TTS(auto_download=True)
+        style = tts.get_voice_style(voice_name=args.voice)
+        
+        wav, duration = tts.synthesize(
+            text=args.text,
+            lang=args.lang,
+            voice_style=style,
+            total_steps=args.steps,
+            speed=args.speed
+        )
+        
+        tts.save_audio(wav, args.output)
+        # duration is a numpy array scalar, use item() to get python float
+        d_val = duration.item() if hasattr(duration, 'item') else float(duration)
+        print(f"Saved to {args.output} (Duration: {d_val:.2f}s)")
+
+        if not args.no_play:
+            if not play_audio(args.output, args.player):
+                print("Warning: No audio player found.")
+    except Exception as e:
+        print(f"Error during synthesis: {e}")
+        sys.exit(1)
 
 if __name__ == "__main__":
     main()
