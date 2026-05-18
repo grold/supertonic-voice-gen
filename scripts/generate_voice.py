@@ -1,5 +1,7 @@
 import argparse
 import sys
+from supertonic import TTS
+import os
 
 def main():
     parser = argparse.ArgumentParser(description="Supertonic Voice Generator")
@@ -13,7 +15,20 @@ def main():
     parser.add_argument("--player", help="Explicit player choice")
 
     args = parser.parse_args()
-    print(f"Synthesizing: {args.text}")
+    
+    tts = TTS(auto_download=True)
+    style = tts.get_voice_style(voice_name=args.voice)
+    
+    wav, duration = tts.synthesize(
+        text=args.text,
+        lang=args.lang,
+        voice_style=style,
+        total_steps=args.steps,
+        speed=args.speed
+    )
+    
+    tts.save_audio(wav, args.output)
+    print(f"Saved to {args.output} (Duration: {duration:.2f}s)")
 
 if __name__ == "__main__":
     main()
