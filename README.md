@@ -12,7 +12,7 @@ This extension provides a specialized skill for generating studio-grade voice au
 ## Installation
 
 ```bash
-gemini extensions install https://github.com/your-username/supertonic-voice-gen
+gemini extensions install https://github.com/grold/supertonic-voice-gen
 ```
 
 ## Requirements
