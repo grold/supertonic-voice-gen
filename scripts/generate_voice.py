@@ -63,6 +63,8 @@ def main():
     parser.add_argument("--no-play", action="store_true", help="Disable playback")
     parser.add_argument("--play", action="store_false", dest="no_play", help="Enable playback (default)")
     parser.add_argument("--player", help="Explicit player choice")
+    parser.add_argument("--cast", default="Bedroom speaker", help="Chromecast device name")
+    parser.add_argument("--no-cast", action="store_true", help="Disable Chromecast playback")
 
     args = parser.parse_args()
     
@@ -92,8 +94,26 @@ def main():
         print(f"Saved to {args.output} (Duration: {d_val:.2f}s)")
 
         if not args.no_play:
-            if not play_audio(args.output, args.player):
-                print("Warning: No audio player found.")
+            played_remotely = False
+            if not args.no_cast:
+                try:
+                    import random
+                    local_ip = get_local_ip()
+                    port = random.randint(8000, 9000)
+                    httpd = start_temporary_server(args.output, port)
+                    print(f"Playing on Chromecast: {args.cast}...")
+                    if play_on_chromecast(args.output, args.cast, local_ip, port):
+                        played_remotely = True
+                        import time
+                        time.sleep(2) # Give it a moment to start
+                    else:
+                        print(f"Warning: Chromecast '{args.cast}' not found.")
+                except Exception as cast_err:
+                    print(f"Warning: Chromecast playback failed: {cast_err}")
+
+            if not played_remotely:
+                if not play_audio(args.output, args.player):
+                    print("Warning: No audio player found.")
     except Exception as e:
         print(f"Error during synthesis: {e}")
         sys.exit(1)
