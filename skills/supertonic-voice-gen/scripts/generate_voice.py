@@ -1,3 +1,11 @@
+# /// script
+# requires-python = ">=3.13"
+# dependencies = [
+#     "pychromecast>=14.0.10",
+#     "supertonic>=1.3.1",
+# ]
+# ///
+
 import argparse
 import sys
 from supertonic import TTS
@@ -94,7 +102,6 @@ def play_audio(file_path, player_override=None, volume=None):
                     cmd.extend(["-volume", str(volume)])
 
             print(f"Playing locally via {p}...")
-            # Use start_new_session to ensure the player isn't tied to the script's lifecycle
             subprocess.Popen(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True)
             return True
     return False
@@ -145,10 +152,8 @@ def main():
 
     if not args.no_play:
         played_remotely = False
-        # default is cast unless --no-cast is specified
         if not args.no_cast:
             try:
-                # Need to convert to MP3 for Chromecast
                 mp3_output = args.output.replace('.wav', '.mp3')
                 if not mp3_output.endswith('.mp3'): mp3_output += '.mp3'
                 
