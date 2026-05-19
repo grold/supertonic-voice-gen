@@ -3,6 +3,7 @@
 # dependencies = [
 #     "pychromecast>=14.0.10",
 #     "supertonic>=1.3.1",
+#     "numpy<2.0.0",
 # ]
 # ///
 
