@@ -4,6 +4,18 @@ from supertonic import TTS
 import os
 import subprocess
 import shutil
+import socket
+
+def get_local_ip():
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        # Doesn't actually connect, just gets the interface IP
+        s.connect(('8.8.8.8', 80))
+        return s.getsockname()[0]
+    except Exception:
+        return socket.gethostbyname(socket.gethostname())
+    finally:
+        s.close()
 
 def play_audio(file_path, player_override=None):
     players = [player_override] if player_override else ["mpv", "vlc", "ffplay"]
