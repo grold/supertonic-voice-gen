@@ -5,6 +5,9 @@ import os
 import subprocess
 import shutil
 import socket
+import http.server
+import socketserver
+import threading
 
 def get_local_ip():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -16,6 +19,14 @@ def get_local_ip():
         return socket.gethostbyname(socket.gethostname())
     finally:
         s.close()
+
+def start_temporary_server(file_path, port=8000):
+    # handler for serving just the directory of the file
+    handler = http.server.SimpleHTTPRequestHandler
+    httpd = socketserver.TCPServer(("", port), handler)
+    thread = threading.Thread(target=httpd.serve_forever, daemon=True)
+    thread.start()
+    return httpd
 
 def play_audio(file_path, player_override=None):
     players = [player_override] if player_override else ["mpv", "vlc", "ffplay"]
