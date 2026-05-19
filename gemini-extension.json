@@ -1,6 +1,6 @@
 {
   "name": "supertonic-voice-gen",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Interactive voice generation using Supertonic SDK with Chromecast support.",
   "author": "grold",
   "license": "MIT"
