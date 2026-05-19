@@ -8,6 +8,7 @@ import socket
 import http.server
 import socketserver
 import threading
+import pychromecast
 
 def get_local_ip():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -27,6 +28,20 @@ def start_temporary_server(file_path, port=8000):
     thread = threading.Thread(target=httpd.serve_forever, daemon=True)
     thread.start()
     return httpd
+
+def play_on_chromecast(file_path, friendly_name, local_ip, port):
+    chromecasts, browser = pychromecast.get_listed_chromecasts(friendly_names=[friendly_name])
+    if not chromecasts:
+        return False
+    
+    cast = chromecasts[0]
+    cast.wait()
+    mc = cast.media_controller
+    # file_path should be relative to the server root (current directory)
+    url = f"http://{local_ip}:{port}/{file_path}"
+    mc.play_media(url, 'audio/wav')
+    mc.block_until_active()
+    return True
 
 def play_audio(file_path, player_override=None):
     players = [player_override] if player_override else ["mpv", "vlc", "ffplay"]
